@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
@@ -37,7 +36,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(name=form.name.data).first()
         if user and check_password(user.password_hash, form.password.data):
-            login_user(user)
+            login_user(user)  # Вход пользователя
             logger.info(f'User logged in: {user.name}')
             return redirect(url_for('main.home'))
         else:
@@ -84,4 +83,3 @@ def order():
     order_items = OrderItem.query.filter_by(order=current_user.id).all()
     total = sum(item.quantity * item.price for item in order_items)
     return render_template('order.html', order_items=order_items, total=total)
-

@@ -1,5 +1,3 @@
-
-
 from app import db
 from flask_login import UserMixin
 
@@ -21,4 +19,5 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+
 
