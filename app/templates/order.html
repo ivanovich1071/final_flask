@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Ваш заказ</h2>
+    {% if order_items %}
+    <ul class="list-group">
+        {% for item in order_items %}
+        <li class="list-group-item">
+            {{ item.name }} - {{ item.quantity }} шт. - {{ item.quantity * item.price }} руб.
+        </li>
+        {% endfor %}
+    </ul>
+    <h4 class="mt-3">Итого: {{ total }} руб.</h4>
+    <a href="#" class="btn btn-success btn-lg mt-3">Оплатить</a>
+    {% else %}
+    <p>Ваш заказ пуст.</p>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-lg mt-3">Выход</a>
+</div>
+{% endblock %}
