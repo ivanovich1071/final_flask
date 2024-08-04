@@ -19,9 +19,8 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # Регистрация маршрутов
-    with app.app_context():
-        from app import routes, models
+    # Регистрация маршрутов через Blueprints
+    from app.routes import main_bp
+    app.register_blueprint(main_bp)
 
     return app
-
