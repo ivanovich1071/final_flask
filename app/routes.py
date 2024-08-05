@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from app import db
+from app import db, login_manager
 from app.models import User, Order, OrderItem
 from app.forms import RegistrationForm, LoginForm
 from app.utils import hash_password, check_password
@@ -12,6 +12,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Создание Blueprint
 main_bp = Blueprint('main', __name__)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @main_bp.route('/')
 def home():
@@ -36,7 +40,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(name=form.name.data).first()
         if user and check_password(user.password_hash, form.password.data):
-            login_user(user)  # Вход пользователя
+            login_user(user)
             logger.info(f'User logged in: {user.name}')
             return redirect(url_for('main.home'))
         else:
@@ -69,7 +73,13 @@ def add_to_order():
     quantity = int(request.form.get('quantity', 1))
     price = float(request.form.get('price'))
 
-    order_item = OrderItem(name=item_name, quantity=quantity, price=price, order=current_user.id)
+    order = Order.query.filter_by(user_id=current_user.id).first()
+    if not order:
+        order = Order(user_id=current_user.id)
+        db.session.add(order)
+        db.session.commit()
+
+    order_item = OrderItem(name=item_name, quantity=quantity, price=price, order_id=order.id)
     db.session.add(order_item)
     db.session.commit()
     logger.info(f'Item added to order: {item_name}, quantity: {quantity}')
@@ -80,6 +90,7 @@ def add_to_order():
 @main_bp.route('/order')
 @login_required
 def order():
-    order_items = OrderItem.query.filter_by(order=current_user.id).all()
+    order = Order.query.filter_by(user_id=current_user.id).first()
+    order_items = OrderItem.query.filter_by(order_id=order.id).all() if order else []
     total = sum(item.quantity * item.price for item in order_items)
     return render_template('order.html', order_items=order_items, total=total)

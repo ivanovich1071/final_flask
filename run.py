@@ -3,11 +3,13 @@ from app.models import User, Order, OrderItem
 
 app = create_app()
 
-# Контекст для командной оболочки
+# Оболочка для Flask shell, чтобы можно было легко работать с базой данных из командной строки
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User, 'Order': Order, 'OrderItem': OrderItem}
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 

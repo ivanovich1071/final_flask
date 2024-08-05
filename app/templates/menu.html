@@ -7,7 +7,7 @@
         <img src="{{ url_for('static', filename='image/' + item.image) }}" alt="{{ item.name }}">
         <h3>{{ item.name }}</h3>
         <p>{{ item.price }} руб</p>
-        <form action="{{ url_for('add_to_order') }}" method="POST">
+        <form action="{{ url_for('main.add_to_order') }}" method="POST">
             <input type="hidden" name="item_name" value="{{ item.name }}">
             <input type="hidden" name="price" value="{{ item.price }}">
             <button type="button" class="btn btn-secondary btn-sm" onclick="decreaseQuantity(this)">-</button>
